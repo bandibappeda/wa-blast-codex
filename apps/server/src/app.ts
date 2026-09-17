@@ -16,6 +16,9 @@ import { GatewayRegistry } from "./modules/gateways/gateway-registry";
 import { MockGatewayAdapter } from "./modules/gateways/mock-gateway-adapter";
 import { GatewayService } from "./modules/gateways/gateway-service";
 import { registerGatewayRoutes } from "./modules/gateways/gateway-routes";
+import { AttachmentStore } from "./modules/templates/attachment-store";
+import { TemplateService } from "./modules/templates/template-service";
+import { registerTemplateRoutes } from "./modules/templates/template-routes";
 
 export interface AppDependencies {
   db?: Database;
@@ -52,6 +55,11 @@ export function createApp(dependencies: AppDependencies = {}) {
   registry.register(new MockGatewayAdapter());
   registerGatewayRoutes(app, {
     service: new GatewayService({ db, clock, ids, config, registry, vault: new CredentialVault(config.gatewayEncryptionKey) }),
+    auth,
+    config,
+  });
+  registerTemplateRoutes(app, {
+    service: new TemplateService({ db, clock, ids, config, attachmentStore: new AttachmentStore({ rootPath: config.uploadsPath, ...(config.attachmentMaxBytes === undefined ? {} : { maxBytes: config.attachmentMaxBytes }) }) }),
     auth,
     config,
   });

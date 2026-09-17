@@ -14,7 +14,7 @@ export async function request<T>(path: string, init: RequestInit = {}): Promise<
     credentials: "include",
     headers: {
       Accept: "application/json",
-      ...(init.body ? { "Content-Type": "application/json" } : {}),
+      ...(init.body && !(init.body instanceof FormData) ? { "Content-Type": "application/json" } : {}),
       ...init.headers,
     },
   });
@@ -41,5 +41,8 @@ export const api = {
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
       ...(csrfToken ? { headers: { "X-CSRF-Token": csrfToken } } : {}),
     });
+  },
+  upload<T>(path: string, body: FormData, csrfToken?: string): Promise<T> {
+    return request<T>(path, { method: "POST", body, ...(csrfToken ? { headers: { "X-CSRF-Token": csrfToken } } : {}) });
   },
 };

@@ -45,6 +45,17 @@ button, input { font: inherit; }
 .dialog-fields { display: grid; gap: 16px; margin: 24px 0; }
 .dialog-actions { justify-content: flex-end; padding-top: 18px; border-top: 1px solid var(--border); }
 .form-error { color: var(--destructive); font-size: .82rem; }
+.template-editor { min-width: 0; }
+.template-editor-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(300px, 1.1fr); gap: 32px; margin-top: 28px; }
+.template-form-column { display: flex; flex-direction: column; gap: 20px; }
+.template-preview { align-self: start; padding: 22px; border: 1px solid var(--border); background: var(--card); }
+.preview-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.preview-header h3 { margin: 8px 0 0; font-size: 1rem; }
+.preview-message { min-height: 180px; margin: 22px 0 12px; padding: 16px; border-left: 2px solid var(--primary); background: var(--muted); white-space: pre-wrap; line-height: 1.6; }
+.variable-summary { display: flex; flex-direction: column; gap: 10px; padding-top: 16px; border-top: 1px solid var(--border); }
+.variable-chip { display: inline-flex; margin: 4px 4px 0 0; padding: 4px 7px; border: 1px solid var(--border); color: var(--foreground); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .72rem; }
+.variable-chip.is-missing { border-color: color-mix(in oklab, var(--destructive) 35%, var(--border)); color: var(--destructive); }
+.table-subline { display: block; max-width: 360px; margin-top: 4px; color: var(--muted-foreground); font-size: .75rem; }
 
 .admin-frame { min-height: 100vh; display: grid; grid-template-columns: 248px minmax(0, 1fr); background: var(--background); }
 .admin-sidebar { display: flex; flex-direction: column; gap: 24px; border-right: 1px solid var(--border); padding: 24px 18px; }
@@ -88,4 +99,5 @@ button, input { font: inherit; }
   .metric-grid { grid-template-columns: 1fr; }
   .toolbar, .import-panel { display: flex; flex-direction: column; align-items: stretch; }
   .toolbar > input { max-width: none; }
+  .template-editor-grid { grid-template-columns: 1fr; }
 }

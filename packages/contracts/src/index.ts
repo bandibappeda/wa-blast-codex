@@ -31,3 +31,12 @@ export {
   type GatewayCreateRequest,
   type GatewayUpdateRequest,
 } from "./gateways";
+
+export {
+  templateBodySchema,
+  templateCreateRequestSchema,
+  templatePreviewRequestSchema,
+  templateUpdateRequestSchema,
+  type TemplateCreateRequest,
+  type TemplateUpdateRequest,
+} from "./templates";

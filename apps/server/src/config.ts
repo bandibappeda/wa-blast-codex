@@ -11,6 +11,7 @@ export interface AppConfig {
   organizationTimeZone: string;
   sessionTtlHours: number;
   sessionCookieSecure: boolean;
+  attachmentMaxBytes?: number;
   gatewayEncryptionKey?: string;
 }
 
@@ -33,6 +34,7 @@ export function loadConfig(environment: Environment = Bun.env): AppConfig {
     organizationTimeZone: environment.ORGANIZATION_TIME_ZONE ?? "Asia/Jakarta",
     sessionTtlHours: numberFrom(environment.SESSION_TTL_HOURS, 12),
     sessionCookieSecure: environment.SESSION_COOKIE_SECURE === "true",
+    attachmentMaxBytes: numberFrom(environment.ATTACHMENT_MAX_BYTES, 10 * 1024 * 1024),
     ...(environment.GATEWAY_ENCRYPTION_KEY
       ? { gatewayEncryptionKey: environment.GATEWAY_ENCRYPTION_KEY }
       : {}),
