@@ -205,6 +205,54 @@ export class GatewayService {
     return result;
   }
 
+  async sendMessageForJob(input: { connectionId: string; organizationId: string; idempotencyKey: string; recipientPhone: string; body: string; attachment?: { storageKey: string; mimeType: string } }): Promise<SendMessageResult> {
+    const row = this.getRow(input.connectionId, input.organizationId);
+    if (!row) throw new GatewayDeliveryError("gateway_not_found");
+    if (!row.enabled) throw new GatewayDeliveryError("gateway_disabled");
+    if (row.health_status === "unhealthy") throw new GatewayDeliveryError("gateway_unhealthy");
+    return this.dependencies.registry.get(row.adapter_type).sendMessage({
+      connection: await this.toConnection(row),
+      idempotencyKey: input.idempotencyKey,
+      recipientPhone: input.recipientPhone,
+      body: input.body,
+      ...(input.attachment ? { attachment: input.attachment } : {}),
+    });
+  }
+
+  reserveSendSlot(connectionId: string, organizationId: string, now: Date): Date {
+    this.dependencies.db.exec("BEGIN IMMEDIATE");
+    try {
+      const row = this.dependencies.db.query<{ next_send_at: string | null; messages_per_minute: number }, [string, string]>("SELECT next_send_at, messages_per_minute FROM gateway_connections WHERE id = ? AND organization_id = ?").get(connectionId, organizationId);
+      if (!row) throw new GatewayDeliveryError("gateway_not_found");
+      const current = row.next_send_at ? new Date(row.next_send_at) : now;
+      if (current > now) {
+        this.dependencies.db.exec("COMMIT");
+        return current;
+      }
+      const intervalMs = Math.ceil(60_000 / Math.max(1, row.messages_per_minute));
+      const next = new Date(now.getTime() + intervalMs).toISOString();
+      this.dependencies.db.query("UPDATE gateway_connections SET next_send_at = ?, updated_at = ? WHERE id = ? AND organization_id = ?").run(next, now.toISOString(), connectionId, organizationId);
+      this.dependencies.db.exec("COMMIT");
+      return now;
+    } catch (error) {
+      this.dependencies.db.exec("ROLLBACK");
+      throw error;
+    }
+  }
+
+  recordDeliveryOutcome(connectionId: string, organizationId: string, transientFailure: boolean): void {
+    const row = this.getRow(connectionId, organizationId);
+    if (!row) return;
+    const now = this.dependencies.clock.now().toISOString();
+    if (!transientFailure) {
+      this.dependencies.db.query("UPDATE gateway_connections SET consecutive_failures = 0, health_status = 'healthy', unhealthy_until = NULL, updated_at = ? WHERE id = ? AND organization_id = ?").run(now, connectionId, organizationId);
+      return;
+    }
+    const failures = row.consecutive_failures + 1;
+    const unhealthyUntil = failures >= 3 ? new Date(this.dependencies.clock.now().getTime() + 60_000).toISOString() : row.unhealthy_until;
+    this.dependencies.db.query("UPDATE gateway_connections SET consecutive_failures = ?, health_status = ?, unhealthy_until = ?, updated_at = ? WHERE id = ? AND organization_id = ?").run(failures, failures >= 3 ? "unhealthy" : row.health_status, unhealthyUntil, now, connectionId, organizationId);
+  }
+
   private async toConnection(row: GatewayRow): Promise<GatewayConnectionConfig> {
     return {
       id: row.id,
@@ -242,6 +290,10 @@ export class GatewayService {
 }
 
 export class GatewayInputError extends Error {
+  constructor(readonly code: string) { super(code); }
+}
+
+export class GatewayDeliveryError extends Error {
   constructor(readonly code: string) { super(code); }
 }
 
