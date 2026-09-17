@@ -72,7 +72,10 @@ Important invariants:
 - A contact without valid consent cannot become a campaign recipient.
 - Suppression overrides consent and cannot be cleared by re-importing a contact.
 - Campaign recipients and personalization values are frozen at approval.
-- Editing an approved campaign invalidates its approval.
+- An approved or scheduled campaign can be reopened only before any job is
+  claimed; reopening invalidates approval and removes recipient snapshots and
+  pending jobs in one transaction. Queued or running campaigns are immutable
+  and must be cancelled or duplicated.
 - Every message job has an idempotency key.
 - Delivery events are append-only.
 - Approval, cancellation, import, role, gateway, consent, and suppression
@@ -83,6 +86,7 @@ Important invariants:
 ```text
 draft -> pending_approval -> approved
 approved -> scheduled | queued
+approved/scheduled -> draft (reopen before any job is claimed)
 scheduled -> queued -> running
 running -> completed | completed_with_failures
 draft/pending_approval/approved/scheduled/queued/running -> cancelled
