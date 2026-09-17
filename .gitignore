@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+.bun/
+
+# Build and test output
+dist/
+.vite/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# WhatsApp session credentials and caches
+sessions/
+.sessions/
+.wwebjs_auth/
+.wwebjs_cache/
+auth_info_baileys/
+
+# SQLite runtime data
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+
+# Logs and temporary files
+*.log
+tmp/
+.tmp/
+temp/
+.temp/
+
+# Editor and operating system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
