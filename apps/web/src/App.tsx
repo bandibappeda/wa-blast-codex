@@ -8,6 +8,7 @@ import { AdminLayout } from "./layouts/admin-layout";
 import { ContactsPage } from "./features/contacts/contacts-page";
 import { GatewaysPage } from "./features/gateways/gateways-page";
 import { TemplatesPage } from "./features/templates/templates-page";
+import { CampaignsPage } from "./features/campaigns/campaigns-page";
 import "./App.css";
 
 function App() {
@@ -30,7 +31,7 @@ function ProtectedRoutes({ user, onLogout }: { user: NonNullable<ReturnType<type
     <Route path="/dashboard" element={<Dashboard />} />
     <Route path="/contacts" element={<ContactsPage user={user} />} />
     <Route path="/templates" element={<TemplatesPage />} />
-    <Route path="/campaigns" element={<Placeholder title="Campaigns" description="Draft, approve, schedule, and monitor delivery." />} />
+    <Route path="/campaigns" element={<CampaignsPage />} />
     <Route path="/gateways" element={user.role === "admin" ? <GatewaysPage /> : <Forbidden />} />
     <Route path="/users" element={user.role === "admin" ? <Placeholder title="Users" description="Manage internal access and roles." /> : <Forbidden />} />
     <Route path="/audit" element={user.role === "admin" ? <Placeholder title="Audit log" description="Review sensitive actions and state changes." /> : <Forbidden />} />

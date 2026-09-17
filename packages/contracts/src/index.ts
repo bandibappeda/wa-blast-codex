@@ -40,3 +40,11 @@ export {
   type TemplateCreateRequest,
   type TemplateUpdateRequest,
 } from "./templates";
+
+export {
+  campaignCreateRequestSchema,
+  campaignSubmitRequestSchema,
+  campaignUpdateRequestSchema,
+  type CampaignCreateRequest,
+  type CampaignUpdateRequest,
+} from "./campaigns";

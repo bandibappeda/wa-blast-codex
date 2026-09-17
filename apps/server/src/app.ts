@@ -19,6 +19,8 @@ import { registerGatewayRoutes } from "./modules/gateways/gateway-routes";
 import { AttachmentStore } from "./modules/templates/attachment-store";
 import { TemplateService } from "./modules/templates/template-service";
 import { registerTemplateRoutes } from "./modules/templates/template-routes";
+import { CampaignService } from "./modules/campaigns/campaign-service";
+import { registerCampaignRoutes } from "./modules/campaigns/campaign-routes";
 
 export interface AppDependencies {
   db?: Database;
@@ -63,6 +65,7 @@ export function createApp(dependencies: AppDependencies = {}) {
     auth,
     config,
   });
+  registerCampaignRoutes(app, { service: new CampaignService({ db, clock, ids, config }), auth, config });
 
   return app;
 }
