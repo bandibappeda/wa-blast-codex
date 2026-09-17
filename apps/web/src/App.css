@@ -13,7 +13,7 @@ button, input { font: inherit; }
 
 .app-loading, .auth-screen { min-height: 100vh; display: grid; place-items: center; background: var(--background); }
 .app-loading { color: var(--muted-foreground); font-size: 0.9rem; }
-.auth-screen { padding: 24px; background: linear-gradient(135deg, oklch(0.98 0.01 250), oklch(0.94 0.025 220)); }
+.auth-screen { padding: 24px; background: var(--background); }
 .auth-panel { width: min(100%, 430px); border: 1px solid var(--border); background: color-mix(in oklab, var(--card) 94%, transparent); padding: 40px; box-shadow: 0 22px 60px color-mix(in oklab, var(--foreground) 9%, transparent); }
 .eyebrow { color: var(--muted-foreground); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
 .auth-panel h1, .page-heading h1 { margin: 10px 0 0; color: var(--foreground); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.05em; line-height: 1; }
@@ -33,6 +33,18 @@ button, input { font: inherit; }
 .data-table { margin-top: 24px; border-top: 1px solid var(--border); }
 .mono-cell { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem; }
 .action-column { text-align: right; }
+.gateway-table { overflow-x: auto; }
+.status-label { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; text-transform: capitalize; }
+.status-dot { width: 7px; height: 7px; border-radius: 999px; background: var(--muted-foreground); }
+.status-healthy .status-dot { background: oklch(0.58 0.16 150); }
+.status-unhealthy .status-dot { background: var(--destructive); }
+.gateway-dialog-backdrop { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; background: color-mix(in oklab, var(--foreground) 22%, transparent); }
+.gateway-dialog { width: min(100%, 520px); max-height: calc(100vh - 40px); overflow: auto; padding: 24px; border: 1px solid var(--border); background: var(--card); box-shadow: 0 22px 60px color-mix(in oklab, var(--foreground) 18%, transparent); }
+.dialog-heading, .dialog-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dialog-heading h2 { margin: 8px 0 0; font-size: 1.2rem; }
+.dialog-fields { display: grid; gap: 16px; margin: 24px 0; }
+.dialog-actions { justify-content: flex-end; padding-top: 18px; border-top: 1px solid var(--border); }
+.form-error { color: var(--destructive); font-size: .82rem; }
 
 .admin-frame { min-height: 100vh; display: grid; grid-template-columns: 248px minmax(0, 1fr); background: var(--background); }
 .admin-sidebar { display: flex; flex-direction: column; gap: 24px; border-right: 1px solid var(--border); padding: 24px 18px; }

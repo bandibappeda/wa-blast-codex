@@ -6,6 +6,7 @@ import { ChangePasswordPage } from "./features/auth/change-password-page";
 import { LoginPage } from "./features/auth/login-page";
 import { AdminLayout } from "./layouts/admin-layout";
 import { ContactsPage } from "./features/contacts/contacts-page";
+import { GatewaysPage } from "./features/gateways/gateways-page";
 import "./App.css";
 
 function App() {
@@ -29,7 +30,7 @@ function ProtectedRoutes({ user, onLogout }: { user: NonNullable<ReturnType<type
     <Route path="/contacts" element={<ContactsPage user={user} />} />
     <Route path="/templates" element={<Placeholder title="Templates" description="Build personalized messages with safe attachments." />} />
     <Route path="/campaigns" element={<Placeholder title="Campaigns" description="Draft, approve, schedule, and monitor delivery." />} />
-    <Route path="/gateways" element={user.role === "admin" ? <Placeholder title="Gateways" description="Configure connections and health checks." /> : <Forbidden />} />
+    <Route path="/gateways" element={user.role === "admin" ? <GatewaysPage /> : <Forbidden />} />
     <Route path="/users" element={user.role === "admin" ? <Placeholder title="Users" description="Manage internal access and roles." /> : <Forbidden />} />
     <Route path="/audit" element={user.role === "admin" ? <Placeholder title="Audit log" description="Review sensitive actions and state changes." /> : <Forbidden />} />
     <Route path="*" element={<Navigate to="/dashboard" replace />} />

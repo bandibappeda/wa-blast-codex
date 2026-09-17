@@ -11,6 +11,11 @@ import { registerAuthRoutes } from "./modules/auth/auth-routes";
 import type { AuthEnv } from "./modules/auth/auth-middleware";
 import { ContactService } from "./modules/contacts/contact-service";
 import { registerContactRoutes } from "./modules/contacts/contact-routes";
+import { CredentialVault } from "./modules/gateways/credential-vault";
+import { GatewayRegistry } from "./modules/gateways/gateway-registry";
+import { MockGatewayAdapter } from "./modules/gateways/mock-gateway-adapter";
+import { GatewayService } from "./modules/gateways/gateway-service";
+import { registerGatewayRoutes } from "./modules/gateways/gateway-routes";
 
 export interface AppDependencies {
   db?: Database;
@@ -36,13 +41,17 @@ export function createApp(dependencies: AppDependencies = {}) {
     return context.json(response);
   });
 
-  registerAuthRoutes(app, {
-    auth: createAuthService({ db, clock, ids, config }),
-    config,
-  });
   const auth = createAuthService({ db, clock, ids, config });
+  registerAuthRoutes(app, { auth, config });
   registerContactRoutes(app, {
     service: new ContactService({ db, clock, ids, config }),
+    auth,
+    config,
+  });
+  const registry = new GatewayRegistry();
+  registry.register(new MockGatewayAdapter());
+  registerGatewayRoutes(app, {
+    service: new GatewayService({ db, clock, ids, config, registry, vault: new CredentialVault(config.gatewayEncryptionKey) }),
     auth,
     config,
   });

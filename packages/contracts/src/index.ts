@@ -23,3 +23,11 @@ export {
   type ContactCreateRequest,
   type ContactImportPreviewRequest,
 } from "./contacts";
+
+export {
+  gatewayCreateRequestSchema,
+  gatewayTestMessageRequestSchema,
+  gatewayUpdateRequestSchema,
+  type GatewayCreateRequest,
+  type GatewayUpdateRequest,
+} from "./gateways";
