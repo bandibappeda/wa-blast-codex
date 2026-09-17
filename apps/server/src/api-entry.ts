@@ -1,12 +1,16 @@
 import { createApp } from "./app";
+import { loadConfig } from "./config";
+import { openDatabase } from "./db/database";
+import { migrate } from "./db/migrate";
 
-const host = Bun.env.API_HOST ?? "127.0.0.1";
-const port = Number(Bun.env.API_PORT ?? "3000");
+const config = loadConfig();
+const db = openDatabase(config.databasePath);
+migrate(db);
 
 const server = Bun.serve({
-  fetch: createApp().fetch,
-  hostname: host,
-  port,
+  fetch: createApp({ db, config }).fetch,
+  hostname: config.apiHost,
+  port: config.apiPort,
 });
 
 console.info(
