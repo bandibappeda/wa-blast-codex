@@ -13,8 +13,13 @@ export type AuthEnv = {
 export function requireUser(
   auth: AuthService,
   config: AppConfig,
+  options: { skipPathPrefix?: string } = {},
 ): MiddlewareHandler<AuthEnv> {
   return async (context, next) => {
+    if (options.skipPathPrefix && context.req.path.startsWith(options.skipPathPrefix)) {
+      await next();
+      return;
+    }
     const session = await auth.resolveSession(readSessionCookie(context, config));
     if (!session) return context.json({ error: "unauthorized" }, 401);
     context.set("auth", session);
@@ -58,7 +63,8 @@ export function requireRecentAuthentication(
 
 export function requirePasswordChangeComplete(): MiddlewareHandler<AuthEnv> {
   return async (context, next) => {
-    if (context.get("auth").user.summary.mustChangePassword) {
+    const auth = context.get("auth");
+    if (auth?.user.summary.mustChangePassword) {
       return context.json({ error: "password_change_required" }, 403);
     }
     await next();

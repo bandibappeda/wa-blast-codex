@@ -22,6 +22,8 @@ import { registerTemplateRoutes } from "./modules/templates/template-routes";
 import { CampaignService } from "./modules/campaigns/campaign-service";
 import { registerCampaignRoutes } from "./modules/campaigns/campaign-routes";
 import { ApprovalService } from "./modules/campaigns/approval-service";
+import { registerWebhookRoutes } from "./modules/delivery/webhook-routes";
+import { WebhookService } from "./modules/delivery/webhook-service";
 
 export interface AppDependencies {
   db?: Database;
@@ -56,8 +58,10 @@ export function createApp(dependencies: AppDependencies = {}) {
   });
   const registry = new GatewayRegistry();
   registry.register(new MockGatewayAdapter());
+  const vault = new CredentialVault(config.gatewayEncryptionKey);
+  const gatewayService = new GatewayService({ db, clock, ids, config, registry, vault });
   registerGatewayRoutes(app, {
-    service: new GatewayService({ db, clock, ids, config, registry, vault: new CredentialVault(config.gatewayEncryptionKey) }),
+    service: gatewayService,
     auth,
     config,
   });
@@ -68,6 +72,7 @@ export function createApp(dependencies: AppDependencies = {}) {
   });
   const campaignService = new CampaignService({ db, clock, ids, config });
   registerCampaignRoutes(app, { service: campaignService, approval: new ApprovalService({ db, clock, ids, config, campaigns: campaignService }), auth, config });
+  registerWebhookRoutes(app, { service: new WebhookService({ db, clock, ids, registry, vault }), auth, config });
 
   return app;
 }

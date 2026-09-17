@@ -49,3 +49,11 @@ export {
   type CampaignCreateRequest,
   type CampaignUpdateRequest,
 } from "./campaigns";
+
+export {
+  deliveryResultStatusSchema,
+  deliveryResultsQuerySchema,
+  gatewayWebhookRequestSchema,
+  type GatewayWebhookRequest,
+  type DeliveryResultsQuery,
+} from "./delivery";

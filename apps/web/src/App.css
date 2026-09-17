@@ -56,6 +56,24 @@ button, input { font: inherit; }
 .approval-check input { margin-top: 2px; accent-color: var(--primary); }
 .review-panel { margin-top: 24px; padding: 20px 0; border-top: 1px solid var(--border); }
 .review-panel p { color: var(--muted-foreground); font-size: .85rem; line-height: 1.6; }
+.delivery-results { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+.section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.section-heading h2 { margin: 5px 0 0; font-size: 1.15rem; }
+.delivery-heading-actions { display: flex; align-items: center; gap: 10px; }
+.button-link { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; padding: 0 11px; border: 1px solid var(--border); background: var(--background); color: var(--foreground); font-size: .8rem; font-weight: 600; text-decoration: none; }
+.button-link:hover { background: var(--muted); }
+.delivery-summary { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 1px; margin-top: 18px; border: 1px solid var(--border); background: var(--border); }
+.delivery-summary-item { display: flex; flex-direction: column; gap: 7px; min-height: 76px; padding: 13px; background: var(--card); }
+.delivery-summary-item span { color: var(--muted-foreground); font-size: .72rem; }
+.delivery-summary-item strong { font-size: 1.35rem; letter-spacing: -.04em; }
+.delivery-toolbar { display: flex; align-items: center; gap: 10px; margin-top: 18px; }
+.delivery-toolbar input { max-width: 280px; }
+.delivery-toolbar select { height: 32px; padding: 0 28px 0 9px; border: 1px solid var(--input); background: var(--background); color: var(--foreground); font-size: .8rem; }
+.delivery-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 14px; }
+.delivery-status-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--muted-foreground); }
+.delivery-status-dot.delivery-status-delivered, .delivery-status-dot.delivery-status-read { background: oklch(0.58 0.16 150); }
+.delivery-status-dot.delivery-status-failed { background: var(--destructive); }
+.delivery-status-dot.delivery-status-sent { background: var(--primary); }
 .template-editor { min-width: 0; }
 .template-editor-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(300px, 1.1fr); gap: 32px; margin-top: 28px; }
 .template-form-column { display: flex; flex-direction: column; gap: 20px; }
@@ -138,7 +156,10 @@ button, input { font: inherit; }
   .metric-grid { grid-template-columns: 1fr; }
   .toolbar, .import-panel { display: flex; flex-direction: column; align-items: stretch; }
   .toolbar > input { max-width: none; }
+  .delivery-heading-actions, .delivery-toolbar { align-items: stretch; flex-direction: column; }
+  .delivery-toolbar input { max-width: none; }
   .template-editor-grid { grid-template-columns: 1fr; }
   .campaign-stepper { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .review-grid { grid-template-columns: 1fr; }
+  .delivery-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

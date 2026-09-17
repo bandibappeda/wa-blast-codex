@@ -25,7 +25,7 @@ export function registerAuthRoutes(
   dependencies: { auth: AuthService; config: AppConfig },
 ): void {
   const { auth, config } = dependencies;
-  const user = requireUser(auth, config);
+  const user = requireUser(auth, config, { skipPathPrefix: "/api/webhooks/" });
   const csrf = requireCsrf(auth);
 
   app.post("/api/auth/login", async (context) => {
