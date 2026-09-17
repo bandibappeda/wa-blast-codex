@@ -45,6 +45,17 @@ button, input { font: inherit; }
 .dialog-fields { display: grid; gap: 16px; margin: 24px 0; }
 .dialog-actions { justify-content: flex-end; padding-top: 18px; border-top: 1px solid var(--border); }
 .form-error { color: var(--destructive); font-size: .82rem; }
+.approval-dialog { width: min(100%, 560px); padding: 24px; border: 1px solid var(--border); background: var(--card); box-shadow: 0 22px 60px color-mix(in oklab, var(--foreground) 18%, transparent); }
+.approval-dialog h2 { margin: 8px 0 0; font-size: 1.2rem; }
+.approval-warning { margin: 20px 0; padding: 14px; border-left: 2px solid var(--destructive); background: color-mix(in oklab, var(--destructive) 7%, var(--card)); color: var(--foreground); font-size: .84rem; line-height: 1.5; }
+.approval-counts { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; padding: 14px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.approval-counts strong { color: var(--primary); font-size: 1.25rem; }
+.approval-counts span { align-self: center; color: var(--muted-foreground); font-size: .8rem; }
+.approval-confirm { display: grid; gap: 16px; margin-top: 18px; }
+.approval-check { display: flex; align-items: flex-start; gap: 8px; font-size: .82rem; line-height: 1.4; }
+.approval-check input { margin-top: 2px; accent-color: var(--primary); }
+.review-panel { margin-top: 24px; padding: 20px 0; border-top: 1px solid var(--border); }
+.review-panel p { color: var(--muted-foreground); font-size: .85rem; line-height: 1.6; }
 .template-editor { min-width: 0; }
 .template-editor-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(300px, 1.1fr); gap: 32px; margin-top: 28px; }
 .template-form-column { display: flex; flex-direction: column; gap: 20px; }
@@ -56,6 +67,8 @@ button, input { font: inherit; }
 .variable-chip { display: inline-flex; margin: 4px 4px 0 0; padding: 4px 7px; border: 1px solid var(--border); color: var(--foreground); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .72rem; }
 .variable-chip.is-missing { border-color: color-mix(in oklab, var(--destructive) 35%, var(--border)); color: var(--destructive); }
 .table-subline { display: block; max-width: 360px; margin-top: 4px; color: var(--muted-foreground); font-size: .75rem; }
+.table-link { color: inherit; text-decoration: none; }
+.table-link:hover strong { color: var(--primary); }
 .campaign-stepper { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: 26px 0 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .campaign-step { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 14px 10px; border: 0; background: transparent; color: var(--muted-foreground); text-align: left; font-size: .78rem; cursor: pointer; }
 .campaign-step span { color: var(--primary); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .68rem; }

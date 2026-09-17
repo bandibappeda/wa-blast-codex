@@ -21,6 +21,7 @@ import { TemplateService } from "./modules/templates/template-service";
 import { registerTemplateRoutes } from "./modules/templates/template-routes";
 import { CampaignService } from "./modules/campaigns/campaign-service";
 import { registerCampaignRoutes } from "./modules/campaigns/campaign-routes";
+import { ApprovalService } from "./modules/campaigns/approval-service";
 
 export interface AppDependencies {
   db?: Database;
@@ -65,7 +66,8 @@ export function createApp(dependencies: AppDependencies = {}) {
     auth,
     config,
   });
-  registerCampaignRoutes(app, { service: new CampaignService({ db, clock, ids, config }), auth, config });
+  const campaignService = new CampaignService({ db, clock, ids, config });
+  registerCampaignRoutes(app, { service: campaignService, approval: new ApprovalService({ db, clock, ids, config, campaigns: campaignService }), auth, config });
 
   return app;
 }

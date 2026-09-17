@@ -42,6 +42,7 @@ export {
 } from "./templates";
 
 export {
+  campaignApprovalRequestSchema,
   campaignCreateRequestSchema,
   campaignSubmitRequestSchema,
   campaignUpdateRequestSchema,

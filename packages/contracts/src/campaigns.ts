@@ -17,5 +17,9 @@ export const campaignSubmitRequestSchema = z.object({
   version: z.number().int().min(1),
 });
 
+export const campaignApprovalRequestSchema = z.object({
+  version: z.number().int().min(1),
+});
+
 export type CampaignCreateRequest = z.infer<typeof campaignCreateRequestSchema>;
 export type CampaignUpdateRequest = z.infer<typeof campaignUpdateRequestSchema>;

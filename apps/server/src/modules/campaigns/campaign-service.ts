@@ -144,7 +144,7 @@ export class CampaignService {
     return { campaigns: rows.map((row) => this.toSummary(row)) };
   }
 
-  async previewDraft(id: string, actor: CampaignActor) {
+  previewDraft(id: string, actor: CampaignActor) {
     const campaign = this.getRow(id, actor.organizationId);
     if (!campaign) throw new CampaignInputError("campaign_not_found");
     const template = this.getTemplate(campaign.template_id, actor.organizationId);
@@ -179,7 +179,7 @@ export class CampaignService {
     if (!campaign) throw new CampaignInputError("campaign_not_found");
     if (campaign.state !== "draft") throw new CampaignInputError("campaign_not_editable");
     if (campaign.version !== version) throw new CampaignInputError("version_conflict");
-    const preview = await this.previewDraft(id, actor);
+    const preview = this.previewDraft(id, actor);
     if (preview.summary.total === 0 || preview.summary.eligible !== preview.summary.total) throw new CampaignInputError("ineligible_recipients", preview.summary);
     if (preview.gatewayWarning) throw new CampaignInputError(preview.gatewayWarning);
     assertCampaignTransition(campaign.state, "pending_approval");
