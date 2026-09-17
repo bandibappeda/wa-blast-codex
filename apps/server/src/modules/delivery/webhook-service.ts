@@ -57,6 +57,7 @@ export interface DeliveryResults {
   pagination: { page: number; pageSize: number; total: number; totalPages: number };
   recipients: Array<{
     id: string;
+    idempotencyKey: string;
     name: string;
     phone: string;
     status: DeliveryResultStatus;
@@ -75,6 +76,7 @@ interface CampaignRow {
 
 interface RecipientRow {
   id: string;
+  idempotency_key: string;
   name: string;
   phone_e164: string;
   status: DeliveryResultStatus;
@@ -203,7 +205,7 @@ export class WebhookService {
   }
 
   private getRecipientRows(campaignId: string, organizationId: string, query: DeliveryResultsQuery, limit?: number, offset?: number): RecipientRow[] {
-    const sql = `SELECT j.id, cr.name, cr.phone_e164, j.status, j.attempt_count,
+    const sql = `SELECT j.id, j.idempotency_key, cr.name, cr.phone_e164, j.status, j.attempt_count,
                         j.provider_message_id, j.last_error_message, j.updated_at
                  FROM message_jobs j
                  JOIN campaigns c ON c.id = j.campaign_id
@@ -330,6 +332,7 @@ function timingSafeEqual(expected: string, actual: string | undefined): boolean 
 function toDeliveryRecipient(row: RecipientRow): DeliveryResults["recipients"][number] {
   return {
     id: row.id,
+    idempotencyKey: row.idempotency_key,
     name: row.name,
     phone: row.phone_e164,
     status: row.status,

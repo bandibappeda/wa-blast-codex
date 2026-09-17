@@ -1,0 +1,26 @@
+[Unit]
+Description=WA Blast API
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=wa-blast
+Group=wa-blast
+WorkingDirectory=/srv/wa-blast/current
+EnvironmentFile=/etc/wa-blast/wa-blast.env
+ExecStartPre=/usr/local/bin/bun --filter @wa-blast/server migrate
+ExecStart=/usr/local/bin/bun apps/server/src/api-entry.ts
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/srv/wa-blast/shared
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

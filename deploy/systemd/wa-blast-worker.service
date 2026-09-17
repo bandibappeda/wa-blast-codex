@@ -1,0 +1,28 @@
+[Unit]
+Description=WA Blast delivery worker
+Wants=network-online.target
+After=network-online.target wa-blast-api.service
+Requires=wa-blast-api.service
+
+[Service]
+Type=simple
+User=wa-blast
+Group=wa-blast
+WorkingDirectory=/srv/wa-blast/current
+EnvironmentFile=/etc/wa-blast/wa-blast.env
+ExecStartPre=/usr/local/bin/bun --filter @wa-blast/server migrate
+ExecStart=/usr/local/bin/bun apps/server/src/worker-entry.ts
+Restart=on-failure
+RestartSec=10s
+TimeoutStopSec=90s
+KillSignal=SIGTERM
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/srv/wa-blast/shared
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

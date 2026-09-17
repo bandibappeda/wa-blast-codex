@@ -14,6 +14,7 @@ export interface DeliveryResultsData {
   pagination: { page: number; pageSize: number; total: number; totalPages: number };
   recipients: Array<{
     id: string;
+    idempotencyKey: string;
     name: string;
     phone: string;
     status: DeliveryStatus;

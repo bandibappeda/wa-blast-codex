@@ -25,6 +25,11 @@ interface UserMutationResponse {
   temporaryPassword?: string;
 }
 
+interface PendingSensitiveAction {
+  id: string;
+  run: () => Promise<void>;
+}
+
 export function UsersPage() {
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +38,10 @@ export function UsersPage() {
   const [temporaryPassword, setTemporaryPassword] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [form, setForm] = useState({ email: "", displayName: "", role: "operator" as UserRecord["role"] });
+  const [reauthOpen, setReauthOpen] = useState(false);
+  const [reauthPassword, setReauthPassword] = useState("");
+  const [reauthSaving, setReauthSaving] = useState(false);
+  const [pendingAction, setPendingAction] = useState<PendingSensitiveAction | null>(null);
 
   const loadUsers = async () => {
     setLoading(true);
@@ -53,9 +62,8 @@ export function UsersPage() {
 
   const createUser = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setWorking("create");
     setTemporaryPassword(null);
-    try {
+    await runSensitive("create", async () => {
       const csrf = await api.get<{ csrfToken: string }>("/api/auth/csrf");
       const result = await api.post<UserMutationResponse>("/api/users", form, csrf.csrfToken);
       setUsers((current) => [...current, result.user].sort((left, right) => left.displayName.localeCompare(right.displayName)));
@@ -63,41 +71,61 @@ export function UsersPage() {
       setShowCreateForm(false);
       setTemporaryPassword(result.temporaryPassword ?? null);
       setError(null);
-    } catch (requestError) {
-      setError(readError(requestError));
-    } finally {
-      setWorking(null);
-    }
+    });
   };
 
   const updateUser = async (user: UserRecord, change: { role?: UserRecord["role"]; status?: UserRecord["status"] }) => {
-    setWorking(user.id);
     setTemporaryPassword(null);
-    try {
+    await runSensitive(user.id, async () => {
       const csrf = await api.get<{ csrfToken: string }>("/api/auth/csrf");
       const updated = await api.patch<UserRecord>(`/api/users/${user.id}`, change, csrf.csrfToken);
       setUsers((current) => current.map((entry) => entry.id === updated.id ? updated : entry));
       setError(null);
-    } catch (requestError) {
-      setError(readError(requestError));
-    } finally {
-      setWorking(null);
-    }
+    });
   };
 
   const resetPassword = async (user: UserRecord) => {
-    setWorking(user.id);
     setTemporaryPassword(null);
-    try {
+    await runSensitive(user.id, async () => {
       const csrf = await api.get<{ csrfToken: string }>("/api/auth/csrf");
       const result = await api.post<UserMutationResponse>(`/api/users/${user.id}/reset-password`, {}, csrf.csrfToken);
       setUsers((current) => current.map((entry) => entry.id === result.user.id ? result.user : entry));
       setTemporaryPassword(result.temporaryPassword ?? null);
       setError(null);
+    });
+  };
+
+  const runSensitive = async (id: string, action: () => Promise<void>) => {
+    setWorking(id);
+    try {
+      await action();
     } catch (requestError) {
-      setError(readError(requestError));
+      if (requestError instanceof ApiError && requestError.code === "reauthentication_required") {
+        setPendingAction({ id, run: action });
+        setReauthOpen(true);
+      } else {
+        setError(readError(requestError));
+      }
     } finally {
       setWorking(null);
+    }
+  };
+
+  const reauthenticate = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setReauthSaving(true);
+    try {
+      const csrf = await api.get<{ csrfToken: string }>("/api/auth/csrf");
+      await api.post("/api/auth/reauthenticate", { password: reauthPassword }, csrf.csrfToken);
+      const next = pendingAction;
+      setPendingAction(null);
+      setReauthOpen(false);
+      setReauthPassword("");
+      if (next) await runSensitive(next.id, next.run);
+    } catch (requestError) {
+      setError(requestError instanceof ApiError && requestError.code === "invalid_credentials" ? "The password was not accepted." : readError(requestError));
+    } finally {
+      setReauthSaving(false);
     }
   };
 
@@ -122,6 +150,7 @@ export function UsersPage() {
 
     <div className="section-heading users-section-heading"><div><div className="eyebrow">WORKSPACE ACCESS</div><h2>Team accounts</h2></div><span className="toolbar-note">{users.length} account{users.length === 1 ? "" : "s"}</span></div>
     {loading ? <p className="toolbar-note">Loading users…</p> : users.length === 0 ? <div className="empty-panel"><span className="empty-index">NONE</span><div><h2>No users found</h2><p>Create the first workspace account to begin.</p></div></div> : <div className="data-table users-table"><Table><TableHeader><TableRow><TableHead>User</TableHead><TableHead>Role</TableHead><TableHead>Status</TableHead><TableHead>Password</TableHead><TableHead className="action-column">Actions</TableHead></TableRow></TableHeader><TableBody>{users.map((user) => <TableRow key={user.id}><TableCell><strong>{user.displayName}</strong><small className="table-subline">{user.email}</small></TableCell><TableCell><select className="inline-select inline-select-small" value={user.role} disabled={working === user.id} onChange={(event) => void updateUser(user, { role: event.target.value as UserRecord["role"] })} aria-label={`Role for ${user.displayName}`}><option value="operator">Operator</option><option value="admin">Admin</option></select></TableCell><TableCell><Badge variant={user.status === "active" ? "secondary" : "outline"}>{user.status}</Badge></TableCell><TableCell>{user.mustChangePassword ? <span className="table-note">Change required</span> : <span className="table-note">Set</span>}</TableCell><TableCell className="action-column"><div className="table-actions"><Button variant="ghost" size="sm" disabled={working === user.id} onClick={() => void updateUser(user, { status: user.status === "active" ? "disabled" : "active" })}>{user.status === "active" ? "Disable" : "Enable"}</Button><Button variant="outline" size="sm" disabled={working === user.id} onClick={() => void resetPassword(user)}>Reset password</Button></div></TableCell></TableRow>)}</TableBody></Table></div>}
+    {reauthOpen ? <div className="gateway-dialog-backdrop"><form className="approval-dialog reauth-dialog" role="dialog" aria-modal="true" onSubmit={(event) => void reauthenticate(event)}><div className="dialog-heading"><div><div className="eyebrow">SECURITY CHECK</div><h2>Reauthenticate</h2></div><Button type="button" variant="ghost" onClick={() => { setReauthOpen(false); setPendingAction(null); }}>Cancel</Button></div><p className="approval-warning">This action changes workspace access. Confirm your current password to continue.</p><div className="field-stack"><label htmlFor="reauth-password">Current password</label><Input id="reauth-password" aria-label="Reauthentication password" type="password" value={reauthPassword} onChange={(event) => setReauthPassword(event.target.value)} autoComplete="current-password" required /></div><div className="dialog-actions"><Button type="submit" disabled={reauthSaving}>{reauthSaving ? "Checking…" : "Continue"}</Button></div></form></div> : null}
   </section>;
 }
 
