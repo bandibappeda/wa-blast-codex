@@ -1,0 +1,22 @@
+{
+  "name": "wa-blast",
+  "private": true,
+  "packageManager": "bun@1.4.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "bun --filter @wa-blast/web dev",
+    "dev:api": "bun --filter @wa-blast/server dev:api",
+    "dev:worker": "bun --filter @wa-blast/server dev:worker",
+    "test": "bun test",
+    "typecheck": "bun run --parallel --filter '*' typecheck",
+    "build": "bun run --sequential --filter '*' build",
+    "check": "bun run typecheck && bun test && bun run build"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "latest"
+  }
+}

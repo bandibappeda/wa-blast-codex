@@ -1,0 +1,19 @@
+{
+  "name": "@wa-blast/server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:api": "bun --watch src/api-entry.ts",
+    "dev:worker": "bun --watch src/worker-entry.ts",
+    "migrate": "bun src/cli/migrate.ts",
+    "bootstrap-admin": "bun src/cli/bootstrap-admin.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "bun build src/api-entry.ts src/worker-entry.ts --outdir dist --target bun"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "latest",
+    "@wa-blast/contracts": "workspace:*",
+    "hono": "latest",
+    "zod": "latest"
+  }
+}
