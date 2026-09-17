@@ -13,7 +13,9 @@
   "dependencies": {
     "@hono/zod-validator": "latest",
     "@wa-blast/contracts": "workspace:*",
+    "csv-parse": "^7.0.2",
     "hono": "latest",
+    "libphonenumber-js": "^1.13.13",
     "zod": "latest"
   }
 }

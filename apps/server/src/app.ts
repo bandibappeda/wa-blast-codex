@@ -9,6 +9,8 @@ import { UuidGenerator, type IdGenerator } from "./shared/id";
 import { createAuthService } from "./modules/auth/auth-service";
 import { registerAuthRoutes } from "./modules/auth/auth-routes";
 import type { AuthEnv } from "./modules/auth/auth-middleware";
+import { ContactService } from "./modules/contacts/contact-service";
+import { registerContactRoutes } from "./modules/contacts/contact-routes";
 
 export interface AppDependencies {
   db?: Database;
@@ -36,6 +38,12 @@ export function createApp(dependencies: AppDependencies = {}) {
 
   registerAuthRoutes(app, {
     auth: createAuthService({ db, clock, ids, config }),
+    config,
+  });
+  const auth = createAuthService({ db, clock, ids, config });
+  registerContactRoutes(app, {
+    service: new ContactService({ db, clock, ids, config }),
+    auth,
     config,
   });
 

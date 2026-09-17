@@ -15,3 +15,11 @@ export {
   type UserRole,
   type UserSummary,
 } from "./auth";
+
+export {
+  contactCreateRequestSchema,
+  contactImportPreviewRequestSchema,
+  suppressionRequestSchema,
+  type ContactCreateRequest,
+  type ContactImportPreviewRequest,
+} from "./contacts";

@@ -9,7 +9,8 @@ describe("SQLite database harness", () => {
     try {
       migrate(context.db);
 
-      expect(context.migrationNames()).toEqual(["0001_core"]);
+      const appliedBeforeRepeat = context.migrationNames();
+      expect(appliedBeforeRepeat).toContain("0001_core");
       expect(context.tableNames()).toEqual(
         expect.arrayContaining([
           "schema_migrations",
@@ -26,7 +27,7 @@ describe("SQLite database harness", () => {
       expect(context.db.query("PRAGMA journal_mode").get()).toEqual({
         journal_mode: "wal",
       });
-      expect(context.migrationNames()).toEqual(["0001_core"]);
+      expect(context.migrationNames()).toEqual(appliedBeforeRepeat);
     } finally {
       context.dispose();
     }

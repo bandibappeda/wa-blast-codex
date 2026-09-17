@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from "./features/auth/auth-provider";
 import { ChangePasswordPage } from "./features/auth/change-password-page";
 import { LoginPage } from "./features/auth/login-page";
 import { AdminLayout } from "./layouts/admin-layout";
+import { ContactsPage } from "./features/contacts/contacts-page";
 import "./App.css";
 
 function App() {
@@ -25,7 +26,7 @@ function ProtectedRoutes({ user, onLogout }: { user: NonNullable<ReturnType<type
   if (user.mustChangePassword) return <Navigate to="/change-password" replace />;
   return <AdminLayout user={user} onLogout={onLogout}><Routes>
     <Route path="/dashboard" element={<Dashboard />} />
-    <Route path="/contacts" element={<Placeholder title="Contacts" description="Manage consented contacts and suppression." />} />
+    <Route path="/contacts" element={<ContactsPage user={user} />} />
     <Route path="/templates" element={<Placeholder title="Templates" description="Build personalized messages with safe attachments." />} />
     <Route path="/campaigns" element={<Placeholder title="Campaigns" description="Draft, approve, schedule, and monitor delivery." />} />
     <Route path="/gateways" element={user.role === "admin" ? <Placeholder title="Gateways" description="Configure connections and health checks." /> : <Forbidden />} />
