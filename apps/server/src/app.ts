@@ -24,6 +24,12 @@ import { registerCampaignRoutes } from "./modules/campaigns/campaign-routes";
 import { ApprovalService } from "./modules/campaigns/approval-service";
 import { registerWebhookRoutes } from "./modules/delivery/webhook-routes";
 import { WebhookService } from "./modules/delivery/webhook-service";
+import { DashboardService } from "./modules/dashboard/dashboard-service";
+import { registerDashboardRoutes } from "./modules/dashboard/dashboard-routes";
+import { UserService } from "./modules/users/user-service";
+import { registerUserRoutes } from "./modules/users/user-routes";
+import { AuditService } from "./modules/audit/audit-service";
+import { registerAuditRoutes } from "./modules/audit/audit-routes";
 
 export interface AppDependencies {
   db?: Database;
@@ -51,6 +57,9 @@ export function createApp(dependencies: AppDependencies = {}) {
 
   const auth = createAuthService({ db, clock, ids, config });
   registerAuthRoutes(app, { auth, config });
+  registerDashboardRoutes(app, { service: new DashboardService({ db, clock }), auth, config });
+  registerUserRoutes(app, { service: new UserService({ db, clock, ids, config }), auth, config });
+  registerAuditRoutes(app, { service: new AuditService({ db, clock, ids }), auth, config });
   registerContactRoutes(app, {
     service: new ContactService({ db, clock, ids, config }),
     auth,

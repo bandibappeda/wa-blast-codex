@@ -57,3 +57,23 @@ export {
   type GatewayWebhookRequest,
   type DeliveryResultsQuery,
 } from "./delivery";
+
+export {
+  dashboardResponseSchema,
+  type DashboardResponse,
+} from "./dashboard";
+
+export {
+  userCreateRequestSchema,
+  userResetPasswordRequestSchema,
+  userStatusSchema,
+  userUpdateRequestSchema,
+  type UserCreateRequest,
+  type UserStatus,
+  type UserUpdateRequest,
+} from "./users";
+
+export {
+  auditQuerySchema,
+  type AuditQuery,
+} from "./audit";

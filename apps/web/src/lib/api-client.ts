@@ -42,6 +42,13 @@ export const api = {
       ...(csrfToken ? { headers: { "X-CSRF-Token": csrfToken } } : {}),
     });
   },
+  patch<T>(path: string, body: unknown, csrfToken?: string): Promise<T> {
+    return request<T>(path, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+      ...(csrfToken ? { headers: { "X-CSRF-Token": csrfToken } } : {}),
+    });
+  },
   upload<T>(path: string, body: FormData, csrfToken?: string): Promise<T> {
     return request<T>(path, { method: "POST", body, ...(csrfToken ? { headers: { "X-CSRF-Token": csrfToken } } : {}) });
   },
